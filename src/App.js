@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
+import {Popover,PopoverHeader, PopoverBody, Container, Row, Col, Card, Button, Nav, NavItem, NavLink, CardImg, CardTitle, CardText, CardBody} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Nav, NavItem, NavLink, Badge, Card, Button, CardImg, CardTitle, CardText, CardDeck,
- CardSubtitle, CardBody, Container, Row, Col, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
  import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
  import { faHeart } from '@fortawesome/free-solid-svg-icons'
 
@@ -21,6 +20,10 @@ class App extends Component {
       popoverOpen: !this.state.popoverOpen
     });
   }
+
+
+
+
 
   render() {
 
@@ -43,7 +46,7 @@ class App extends Component {
     ];
 
     var moviesList = moviesData.map(function(movie){
-        return <Movies movieName={movie.name}
+        return <Movie movieName={movie.name}
                       movieDesc={movie.desc}
                       movieImg={movie.img} />
       }
@@ -72,56 +75,69 @@ switch (moviesCount) {
     }
     moviesNameLast = moviesNameLast + "...";
 
-	}
+}/*
+  if (moviesCount === 0) {
+        moviesNameLast = "aucun film sélectionné";
+  } else if (moviesCount === 1) {
+    moviesNameLast = moviesNameList;
+  } else if (moviesCount === 2)  {
+        moviesNameLast = moviesNameList[0] + ", " + moviesNameList[1];
+        for (var i=1; i<moviesCount; i++) {
+      moviesNameLast = moviesNameLast + moviesNameList[i] + ", ";
+    }
+      if (moviesCount === 2) {
+        moviesNameLast = moviesNameLast.substring(0, moviesNameLast.length - 2);
+      } else {
+        moviesNameLast = moviesNameLast + "...";
+      }
+  }*/
+
+
 
     return (
       <Container style={{backgroundColor:'#000000'}}>
-        <Header totalLike={moviesCount} lastLike={moviesNameLast} />
-        <CardDeck>
-          {moviesList}
-        </CardDeck>
+        <Row>
+          <Col>
+            <Nav style={{marginBottom:'100px'}}>
+              <NavItem>
+                <NavLink href="#"><img src="logo.png"/></NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink style={{color:'#FFFFFF'}}  href="#"> Last releases</NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink style={{color:'#FFFFFF'}}  href="#">My movies</NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink href="#">
+                  <Button id="Popover1" onClick={this.toggle}>
+                    {moviesCount} films
+                  </Button>
+                  <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggle}>
+                    <PopoverHeader>Derniers films ajoutés</PopoverHeader>
+                    <PopoverBody>{moviesNameLast}</PopoverBody>
+                  </Popover>
+                </NavLink>
+              </NavItem>
+            </Nav>
+
+
+          </Col>
+
+        </Row>
+        <Row>
+
+{moviesList}
+
+        </Row>
       </Container>
-    );
+    )
   }
 }
 
-class Header extends Component {
+class Movie extends Component {
 
-  constructor(props) {
-    super(props);
-
-    this.toggle = this.toggle.bind(this);
-    this.state = {
-      popoverOpen: false
-    };
-  }
-
-  toggle() {
-    this.setState({
-      popoverOpen: !this.state.popoverOpen
-    });
-  }
-
-  render (){
-
-    return(
-        <Nav style={{alignItems: 'center', marginBottom: '100px'}}>
-          <img src='logo.png' alt='logo'/>
-          <NavLink style={{color:'#FFFFFF'}} href="#">Last releases</NavLink>
-          <NavLink style={{color:'#FFFFFF'}} href="#">My movies</NavLink>
-        <h3><Badge id="Popover1" onClick={this.toggle} color="secondary">{this.props.totalLike} films</Badge></h3>
-          <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggle}>
-            <PopoverHeader>Derniers films ajoutés</PopoverHeader>
-            <PopoverBody>{this.props.lastLike}</PopoverBody>
-          </Popover>
-        </Nav>
-    );
-  }
-}
-
-
-class Movies extends Component {
-  render (){
+  render() {
 
     var heart = {
       position: "absolute",
@@ -131,12 +147,12 @@ class Movies extends Component {
       height: "25px",
       width: "25px"
     }
-
-	var card = {
+    var card = {
       marginBottom:'5%',
       height: '95%'
     }
 
+/*  style={{alignItems:'stretch'}}*/
     return(
       <Col xs="3">
         <Card style={card}>
@@ -151,6 +167,7 @@ class Movies extends Component {
         </Card>
       </Col>
     );
+
   }
 }
 
