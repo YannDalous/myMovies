@@ -1,29 +1,49 @@
 import React, { Component } from 'react';
 import {Popover,PopoverHeader, PopoverBody, Container, Row, Col, Card, Button, Nav, NavItem, NavLink, CardImg, CardTitle, CardText, CardBody} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.css';
- import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
- import { faHeart } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
 class App extends Component {
 
-  constructor(props) {
-    super(props);
-
+  constructor() {
+    super();
     this.toggle = this.toggle.bind(this);
+    this.handleClickLikeOff = this.handleClickLikeOff.bind(this);
+    this.handleClickLikeOn = this.handleClickLikeOn.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.state = {
-      popoverOpen: false
+      popoverOpen: false,
+      viewOnlyLike: false,
+      moviesCount: 0,
+      moviesNameList: []
     };
   }
 
   toggle() {
-    this.setState({
-      popoverOpen: !this.state.popoverOpen
-    });
+    this.setState({popoverOpen: !this.state.popoverOpen});
   }
 
+  handleClickLikeOff() {
+    this.setState({viewOnlyLike: false});
+  }
+  handleClickLikeOn() {
+    this.setState({viewOnlyLike: true});
+  }
 
-
-
+  handleClick(isLike, name){
+    if (isLike){
+      this.setState({moviesCount: this.state.moviesCount - 1});
+      var moviesNameList = [...this.state.moviesNameList];
+      moviesNameList.splice((moviesNameList.indexOf(name)),1);
+      this.setState({moviesNameList: moviesNameList})
+    } else {
+      this.setState({moviesCount: this.state.moviesCount + 1});
+      var moviesNameList = [...this.state.moviesNameList];
+      moviesNameList.push(name);
+      this.setState({moviesNameList: moviesNameList})
+    }
+  }
 
   render() {
 
@@ -45,54 +65,35 @@ class App extends Component {
       }
     ];
 
-    var moviesList = moviesData.map(function(movie){
-        return <Movie movieName={movie.name}
-                      movieDesc={movie.desc}
-                      movieImg={movie.img} />
-      }
-    );
+    var  moviesList = moviesData.map(movie => {
+          return <Movie movieName={movie.name}
+                        movieDesc={movie.desc}
+                        movieImg={movie.img}
+                        displayOnlyLike= {this.state.viewOnlyLike}
+                        handleClickParent= {this.handleClick} />;
+                      });
 
-  var moviesNameList = ["L'Odyssée de Pi","Maléfique","Les Aventures de Tintin"];
+    //var moviesNameList = ["L'Odyssée de Pi","Maléfique","Les Aventures de Tintin"];
+    var moviesCount = this.state.moviesNameList.length;
+    var moviesNameLast;
 
-
-  var moviesCount = moviesNameList.length;
-
-  var moviesNameLast;
-switch (moviesCount) {
-  case 0:
-    moviesNameLast = "aucun film sélectionné";
-    break;
-  case 1:
-    moviesNameLast = moviesNameList;
-    break;
-  case 2:
-    moviesNameLast = moviesNameList[0] + ", " + moviesNameList[1];
-    break;
-  default:
-  moviesNameLast = moviesNameList[moviesCount-3] + ", ";
-    for (var i=moviesCount-2; i<moviesCount; i++) {
-      moviesNameLast = moviesNameLast + moviesNameList[i] + ", ";
-    }
-    moviesNameLast = moviesNameLast + "...";
-
-}/*
-  if (moviesCount === 0) {
+    switch (moviesCount) {
+      case 0:
         moviesNameLast = "aucun film sélectionné";
-  } else if (moviesCount === 1) {
-    moviesNameLast = moviesNameList;
-  } else if (moviesCount === 2)  {
-        moviesNameLast = moviesNameList[0] + ", " + moviesNameList[1];
-        for (var i=1; i<moviesCount; i++) {
-      moviesNameLast = moviesNameLast + moviesNameList[i] + ", ";
-    }
-      if (moviesCount === 2) {
-        moviesNameLast = moviesNameLast.substring(0, moviesNameLast.length - 2);
-      } else {
+        break;
+      case 1:
+        moviesNameLast = this.state.moviesNameList;
+        break;
+      case 2:
+        moviesNameLast = this.state.moviesNameList[0] + ", " + this.state.moviesNameList[1];
+        break;
+      default:
+      moviesNameLast =this.state. moviesNameList[moviesCount-3] + ", ";
+        for (var i=moviesCount-2; i<moviesCount; i++) {
+          moviesNameLast = moviesNameLast + this.state.moviesNameList[i] + ", ";
+        }
         moviesNameLast = moviesNameLast + "...";
-      }
-  }*/
-
-
+    }
 
     return (
       <Container style={{backgroundColor:'#000000'}}>
@@ -103,15 +104,15 @@ switch (moviesCount) {
                 <NavLink href="#"><img src="logo.png"/></NavLink>
               </NavItem>
               <NavItem>
-                <NavLink style={{color:'#FFFFFF'}}  href="#"> Last releases</NavLink>
+                <NavLink onClick={this.handleClickLikeOff} style={{color:'#FFFFFF'}}  href="#">Last releases</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink style={{color:'#FFFFFF'}}  href="#">My movies</NavLink>
+                <NavLink onClick={this.handleClickLikeOn} style={{color:'#FFFFFF'}}  href="#">My movies</NavLink>
               </NavItem>
               <NavItem>
                 <NavLink href="#">
                   <Button id="Popover1" onClick={this.toggle}>
-                    {moviesCount} films
+                    {this.state.moviesCount} films
                   </Button>
                   <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggle}>
                     <PopoverHeader>Derniers films ajoutés</PopoverHeader>
@@ -120,15 +121,10 @@ switch (moviesCount) {
                 </NavLink>
               </NavItem>
             </Nav>
-
-
           </Col>
-
         </Row>
         <Row>
-
-{moviesList}
-
+          {moviesList}
         </Row>
       </Container>
     )
@@ -137,37 +133,62 @@ switch (moviesCount) {
 
 class Movie extends Component {
 
+  constructor() {
+    super();
+    this.handleClick = this.handleClick.bind(this);
+    this.state = {like: false}
+  }
+
+  handleClick() {
+    if (this.state.like) {
+      this.setState({like: false});
+      this.props.handleClickParent(this.state.like, this.props.movieName);
+  } else {
+    this.setState({like: true});
+    this.props.handleClickParent(this.state.like, this.props.movieName);
+  }
+}
+
   render() {
 
-    var heart = {
-      position: "absolute",
+    var heart;
+    if (this.state.like){
+      //position: "absolute",
+    heart = {top: "15px",
+      right: "15px",
+      height: "25px",
+      width: "25px",
+      color: "#FF5B53"};
+    } else {
+      heart = {
       top: "15px",
       right: "15px",
-      color: "red",
       height: "25px",
-      width: "25px"
+      width: "25px"};
     }
+
     var card = {
       marginBottom:'5%',
       height: '95%'
     }
+//37893587 - 38810671
+    var movieDisplay;
+    if (this.props.displayOnlyLike && !this.state.like) {
+      movieDisplay = {display: 'none'};
+    }
 
-/*  style={{alignItems:'stretch'}}*/
     return(
-      <Col xs="3">
+      <Col style={movieDisplay} xs="3">
         <Card style={card}>
           <CardImg top width="100%" src={this.props.movieImg} alt="Card image cap" />
-          <FontAwesomeIcon style={heart} icon={faHeart} />
-		  <CardBody>
-
+    		  <CardBody>
+            <FontAwesomeIcon onClick={this.handleClick} style={heart} icon={faHeart} />
             <CardTitle>{this.props.movieName}</CardTitle>
             <CardText>{this.props.movieDesc}</CardText>
-
           </CardBody>
         </Card>
       </Col>
     );
-
   }
 }
 
